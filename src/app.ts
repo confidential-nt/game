@@ -1,36 +1,35 @@
-import { Canvas } from "./canvas/canvas.js";
-
-type AnimationFrameHandler = (time: DOMHighResTimeStamp) => void;
+import {
+  AnimationFrame,
+  AnimationFrameHandler,
+} from "./canvas/frame/animation-frame.js";
 
 class App {
-  private readonly canvas: Canvas;
-  private _animationFrameHandler?: AnimationFrameHandler;
+  private _animationFrame?: AnimationFrame;
 
-  constructor(private root: HTMLElement) {
-    this.canvas = new Canvas(this.root);
+  constructor() {
+    const animationFrame = new AnimationFrame(
+      document.querySelector(".app")! as HTMLDivElement
+    );
+
+    animationFrame.setHandler((time: DOMHighResTimeStamp) => {
+      window.requestAnimationFrame(
+        animationFrame.handler! as AnimationFrameHandler
+      );
+    });
+
+    this.setAnimationFrame(animationFrame);
+    this.run();
   }
 
   run() {
-    if (this._animationFrameHandler) {
-      window.requestAnimationFrame(this._animationFrameHandler);
+    if (this._animationFrame) {
+      this._animationFrame.start();
     }
   }
 
-  setAnimationFrame(callback: AnimationFrameHandler) {
-    this._animationFrameHandler = callback;
-  }
-
-  get animationFrameHandler(): AnimationFrameHandler | undefined {
-    if (this._animationFrameHandler) {
-      return this._animationFrameHandler;
-    }
+  setAnimationFrame(animationFrame: AnimationFrame) {
+    this._animationFrame = animationFrame;
   }
 }
 
-const app = new App(document.querySelector(".app")! as HTMLDivElement);
-app.setAnimationFrame((time: DOMHighResTimeStamp) => {
-  window.requestAnimationFrame(
-    app.animationFrameHandler! as AnimationFrameHandler
-  );
-});
-app.run();
+new App();

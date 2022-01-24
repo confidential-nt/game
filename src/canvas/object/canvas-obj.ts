@@ -19,10 +19,16 @@ interface FigureObject {}
 class BaseObject {
   private location: ObjectLocation;
   private figure: ObjectFigure;
+  private color: string | CanvasGradient | CanvasPattern;
 
-  constructor(location: ObjectLocation, figure: ObjectFigure) {
+  constructor(
+    location: ObjectLocation,
+    figure: ObjectFigure,
+    color: string | CanvasGradient | CanvasPattern
+  ) {
     this.location = location;
     this.figure = figure;
+    this.color = color;
   }
 
   setLocation(location: Partial<ObjectLocation>) {
@@ -33,7 +39,12 @@ class BaseObject {
     this.figure = { ...this.figure, ...figure };
   }
 
+  setColor(color: string | CanvasGradient | CanvasPattern) {
+    this.color = color;
+  }
+
   drawOn(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = this.color;
     ctx.fillRect(
       this.location.x,
       this.location.y,
