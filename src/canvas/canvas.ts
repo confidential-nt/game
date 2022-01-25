@@ -1,14 +1,4 @@
-import {
-  BaseObject,
-  FigureObjectImpl,
-  ImageObjectImpl,
-  ObjectColor,
-  ObjectFigure,
-  ObjectLocation,
-} from "./object/canvas-obj.js";
 import { CanvasObject, FigureObject, ImageObject } from "./object/obj-type.js";
-
-type ObjectType = "figure" | "image";
 
 export class Canvas {
   private readonly ctx: CanvasRenderingContext2D | null;

@@ -2,10 +2,13 @@ import {
   AnimationFrame,
   AnimationFrameHandler,
 } from "./canvas/frame/animation-frame.js";
+import { Bullet } from "./canvas/object/bullet.js";
 import {
   FigureObjectImpl,
   ImageObjectImpl,
 } from "./canvas/object/canvas-obj.js";
+import { Ship } from "./canvas/object/ship.js";
+import { Player } from "./player/player.js";
 
 class App {
   private _animationFrame?: AnimationFrame;
@@ -15,20 +18,24 @@ class App {
       document.querySelector(".app")! as HTMLDivElement
     );
 
-    animationFrame.setHandler((time: DOMHighResTimeStamp) => {
-      const ImageObj = new ImageObjectImpl(
-        { x: 15, y: 30 },
-        { width: 20, height: 20 },
-        "../images/spaceship.png"
-      );
-      const figureObj = new FigureObjectImpl(
-        { x: 15, y: 100 },
-        { width: 20, height: 20 },
-        "tomato"
-      );
-      animationFrame.canvas.addObject(ImageObj);
+    const user = new Player("user");
+    const computer = new Player("computer");
 
-      animationFrame.canvas.addObject(figureObj);
+    user.ship = new Ship(
+      { x: 15, y: 30 },
+      { width: 20, height: 20 },
+      "../images/spaceship.png"
+    );
+
+    computer.ship = new Ship(
+      { x: 15, y: 200 },
+      { width: 20, height: 20 },
+      "../images/spaceship.png"
+    );
+
+    animationFrame.setHandler((time: DOMHighResTimeStamp) => {
+      animationFrame.canvas.addObject(user.ship);
+      animationFrame.canvas.addObject(computer.ship);
 
       window.requestAnimationFrame(
         animationFrame.handler! as AnimationFrameHandler
