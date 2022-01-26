@@ -21,10 +21,13 @@ export class Canvas {
   setBackgroundImage(imageUrl: string) {
     this.backgroundImageUrl = imageUrl;
     const img = new Image();
-    img.src = imageUrl;
     img.onload = () => {
       this.ctx?.drawImage(img, 0, 0);
     };
+    img.hidden = true;
+    img.id = "src";
+    img.src = imageUrl;
+    document.body.append(img);
   }
 
   addObject(obj: (FigureObject | ImageObject) & CanvasObject) {
@@ -32,16 +35,9 @@ export class Canvas {
   }
 
   removeObject(obj: (FigureObject | ImageObject) & CanvasObject) {
-    const img = new Image();
-    img.src = this.backgroundImageUrl;
-    img.onload = () => {
-      this.ctx?.drawImage(
-        img,
-        obj.location.x,
-        obj.location.y,
-        obj.figure.width,
-        obj.figure.height
-      );
-    };
+    const image = document.querySelector("#src")! as HTMLImageElement;
+    image.width = this.element.width;
+    image.height = this.element.height;
+    obj.removeFrom(this.ctx! as CanvasRenderingContext2D, image);
   }
 }

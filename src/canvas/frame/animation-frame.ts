@@ -20,6 +20,12 @@ export class AnimationFrame {
     this._handler = handler;
   }
 
+  sleep(second: number) {
+    return new Promise((res, rej) => {
+      setTimeout(() => res("done"), second * 1000);
+    });
+  }
+
   start() {
     window.requestAnimationFrame(this._handler! as AnimationFrameHandler);
   }

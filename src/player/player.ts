@@ -1,4 +1,4 @@
-import { Ship } from "../canvas/object/ship";
+import { Ship } from "../canvas/object/ship.js";
 
 export class Player {
   readonly name: string;

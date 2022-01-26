@@ -61,6 +61,8 @@ export class FigureObjectImpl
       this._figure.height
     );
   }
+
+  removeFrom(ctx: CanvasRenderingContext2D): void {}
 }
 
 export class ImageObjectImpl
@@ -72,6 +74,12 @@ export class ImageObjectImpl
   constructor(loc: ObjectLocation, fig: ObjectFigure, url: string) {
     super(loc, fig);
     this._url = url;
+
+    const img = new Image();
+    img.src = url;
+
+    img.hidden = true;
+    document.body.append(img);
   }
 
   get url(): string {
@@ -79,16 +87,30 @@ export class ImageObjectImpl
   }
 
   drawOn(ctx: CanvasRenderingContext2D): void {
-    const img = new Image();
-    img.src = this._url;
-    img.onload = () => {
-      ctx.drawImage(
-        img,
-        this._location.x,
-        this._location.y,
-        this._figure.width,
-        this._figure.height
-      );
-    };
+    const img = document.querySelector(
+      `[src="${this._url}"]`
+    )! as HTMLImageElement;
+
+    ctx.drawImage(
+      img,
+      this._location.x,
+      this._location.y,
+      this._figure.width,
+      this._figure.height
+    );
+  }
+
+  removeFrom(ctx: CanvasRenderingContext2D, image: HTMLImageElement): void {
+    ctx.drawImage(
+      image,
+      this._location.x,
+      this._location.y,
+      this._figure.width,
+      this._figure.height,
+      this._location.x,
+      this._location.y,
+      this._figure.width,
+      this._figure.height
+    );
   }
 }
