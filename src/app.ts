@@ -35,7 +35,6 @@ class App {
 
     animationFrame.setHandler((time: DOMHighResTimeStamp) => {
       animationFrame.canvas.addObject(user.ship);
-      animationFrame.canvas.addObject(computer.ship);
 
       window.requestAnimationFrame(
         animationFrame.handler! as AnimationFrameHandler

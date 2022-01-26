@@ -21,6 +21,13 @@ export class BaseObject {
     this._figure = fig;
   }
 
+  get location(): ObjectLocation {
+    return this._location;
+  }
+  get figure(): ObjectFigure {
+    return this._figure;
+  }
+
   setLocation(location: Partial<ObjectLocation>) {
     this._location = { ...this._location, ...location };
   }
@@ -41,12 +48,6 @@ export class FigureObjectImpl
     this._color = color;
   }
 
-  get location(): ObjectLocation {
-    return this._location;
-  }
-  get figure(): ObjectFigure {
-    return this._figure;
-  }
   get color(): ObjectColor {
     return this._color;
   }
@@ -73,12 +74,6 @@ export class ImageObjectImpl
     this._url = url;
   }
 
-  get location(): ObjectLocation {
-    return this._location;
-  }
-  get figure(): ObjectFigure {
-    return this._figure;
-  }
   get url(): string {
     return this._url;
   }
