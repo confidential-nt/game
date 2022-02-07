@@ -1,7 +1,7 @@
 import { CanvasObject, FigureObject, ImageObject } from "./object/obj-type.js";
 
 export class Canvas {
-  private readonly ctx: CanvasRenderingContext2D | null;
+  readonly ctx: CanvasRenderingContext2D | null;
   readonly element: HTMLCanvasElement = document.createElement("canvas");
   private backgroundImageUrl: string = "";
 

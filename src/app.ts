@@ -1,3 +1,4 @@
+import { Canvas } from "./canvas/canvas.js";
 import {
   AnimationFrame,
   AnimationFrameHandler,
@@ -14,59 +15,59 @@ import { Player } from "./player/player.js";
 class App {
   private _animationFrame?: AnimationFrame;
   private control?: Control;
+  private readonly canvas: Canvas = new Canvas(
+    document.querySelector(".app")! as HTMLDivElement
+  );
+  readonly user: Player = new Player("user");
+  readonly computer: Player = new Player("computer");
 
   constructor() {
-    const animationFrame = new AnimationFrame(
-      document.querySelector(".app")! as HTMLDivElement
-    );
+    const ready = async () => {
+      await animationFrame.sleep(0.1);
+      this.canvas.addObject(this.user.ship);
+    };
 
+    const animationFrame = new AnimationFrame();
     this.control = new Control();
 
-    const user = new Player("user");
-    const computer = new Player("computer");
-
-    user.ship = new Ship(
+    this.user.ship = new Ship(
       { x: 300, y: 600 },
       { width: 100, height: 100 },
       "../images/spaceship2.png"
     );
 
-    computer.ship = new Ship(
+    this.computer.ship = new Ship(
       { x: 15, y: 200 },
       { width: 20, height: 20 },
       "../images/spaceship2.png"
     );
 
-    const ready = async () => {
-      await animationFrame.sleep(0.1);
-      animationFrame.canvas.addObject(user.ship);
-    };
-
     ready();
 
     this.control.setKeyListener((e: KeyboardEvent) => {
+      // 컨트롤 안에 animationframe, player 둘다 넣어버리는 거지.
       const keyCode = e.code;
-      const userLoc = user.ship.location;
+
       switch (keyCode) {
         case "ArrowUp":
-          animationFrame.canvas.removeObject(user.ship);
-          user.ship.setLocation({ y: userLoc.y - 10 });
-          animationFrame.canvas.addObject(user.ship);
+          this.user.ship.move(this.canvas.ctx! as CanvasRenderingContext2D, {
+            y: this.user.ship.location.y - 25,
+          });
           break;
         case "ArrowDown":
-          animationFrame.canvas.removeObject(user.ship);
-          user.ship.setLocation({ y: userLoc.y + 10 });
-          animationFrame.canvas.addObject(user.ship);
+          this.user.ship.move(this.canvas.ctx! as CanvasRenderingContext2D, {
+            y: this.user.ship.location.y + 25,
+          });
           break;
         case "ArrowLeft":
-          animationFrame.canvas.removeObject(user.ship);
-          user.ship.setLocation({ x: userLoc.x - 10 });
-          animationFrame.canvas.addObject(user.ship);
+          this.user.ship.move(this.canvas.ctx! as CanvasRenderingContext2D, {
+            x: this.user.ship.location.x - 25,
+          });
           break;
         case "ArrowRight":
-          animationFrame.canvas.removeObject(user.ship);
-          user.ship.setLocation({ x: userLoc.x + 10 });
-          animationFrame.canvas.addObject(user.ship);
+          this.user.ship.move(this.canvas.ctx! as CanvasRenderingContext2D, {
+            x: this.user.ship.location.x + 25,
+          });
           break;
       }
     });
@@ -77,7 +78,8 @@ class App {
       );
     });
 
-    this.setAnimationFrame(animationFrame);
+    this._animationFrame = animationFrame;
+
     this.run();
   }
 

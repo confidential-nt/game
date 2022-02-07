@@ -4,11 +4,8 @@ export type AnimationFrameHandler = (time: DOMHighResTimeStamp) => void;
 
 export class AnimationFrame {
   private _handler?: AnimationFrameHandler;
-  readonly canvas: Canvas;
 
-  constructor(private root: HTMLElement) {
-    this.canvas = new Canvas(this.root);
-  }
+  constructor() {}
 
   get handler(): AnimationFrameHandler | undefined {
     if (this._handler) {
