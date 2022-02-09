@@ -70,20 +70,30 @@ export class ImageObjectImpl
   implements ImageObject, CanvasObject
 {
   private _url: string;
+  private _isLoaded: boolean = false;
 
   constructor(loc: ObjectLocation, fig: ObjectFigure, url: string) {
     super(loc, fig);
     this._url = url;
 
     const img = new Image();
+    img.onload = () => {
+      this._isLoaded = true;
+    };
+
     img.src = url;
 
     img.hidden = true;
+
     document.body.append(img);
   }
 
   get url(): string {
     return this._url;
+  }
+
+  get isLoaded(): boolean {
+    return this._isLoaded;
   }
 
   drawOn(ctx: CanvasRenderingContext2D): void {

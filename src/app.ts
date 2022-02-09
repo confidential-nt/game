@@ -4,6 +4,7 @@ import {
   AnimationFrameHandler,
   KeyFrames,
 } from "./canvas/frame/animation-frame.js";
+import { Background } from "./canvas/object/background.js";
 import { Bullet } from "./canvas/object/bullet.js";
 import {
   FigureObjectImpl,
@@ -17,26 +18,31 @@ class App {
   private _animationFrame?: AnimationFrame;
   private control?: Control;
   private readonly canvas: Canvas = new Canvas(
-    document.querySelector(".app")! as HTMLDivElement,
-    "/images/universe.jpg"
+    document.querySelector(".app")! as HTMLDivElement
   );
   readonly user: Player = new Player("user");
   readonly computer: Player = new Player("computer");
 
   constructor() {
-    const ready = async () => {
-      await animationFrame.sleep(0.1);
-      this.canvas.addObject(this.user.ship);
-    };
-
     const animationFrame = new AnimationFrame();
     this.control = new Control();
 
-    const w = 100;
+    this.canvas.setBackgroundImage(
+      new Background(
+        { x: 0, y: 0 },
+        {
+          width: this.canvas.element.width,
+          height: this.canvas.element.height,
+        },
+        "/images/universe.jpg"
+      )
+    );
+
+    const userShipWidth = 100;
 
     this.user.ship = new Ship(
-      { x: this.canvas.element.width / 2 - w / 2, y: 600 },
-      { width: w, height: 100 },
+      { x: this.canvas.element.width / 2 - userShipWidth / 2, y: 600 },
+      { width: userShipWidth, height: 100 },
       "/images/spaceship2.png"
     );
 
@@ -46,7 +52,7 @@ class App {
       "/images/spaceship2.png"
     );
 
-    ready();
+    this.user.ship.trailClearSrc = "/images/universe.jpg";
 
     this.control.setKeyListener((e: KeyboardEvent) => {
       // 컨트롤 안에 animationframe, player 둘다 넣어버리는 거지.
@@ -78,18 +84,23 @@ class App {
 
     const canvasHeight = this.canvas.element.height;
     let x = 0;
-    let y = -canvasHeight + this.user.ship.figure.height;
+    let y = -canvasHeight + this.user.ship.figure.height + 20;
     const keyFrames = new KeyFrames();
 
     keyFrames.addKeyFrame(() => {
-      const image = document.querySelector("#src")! as HTMLImageElement;
+      if (!this.user.ship.isLoaded) return;
+      if (!this.canvas.background?.isLoaded) return;
+
+      const image = document.querySelector(
+        `[src="${this.canvas.backgroundImageUrl}"]`
+      )! as HTMLImageElement;
 
       this.canvas.ctx?.drawImage(image, x, y);
 
       y += 4;
 
       if (y > 0) {
-        y = -canvasHeight + this.user.ship.figure.height;
+        y = -canvasHeight + this.user.ship.figure.height + 20;
       }
       this.user.ship.drawOn(this.canvas.ctx! as CanvasRenderingContext2D);
     });
@@ -118,3 +129,6 @@ class App {
 }
 
 new App();
+
+// 공격 만들기
+// 이미지 구조 수정

@@ -4,10 +4,17 @@ export class Ship extends ImageObjectImpl {
   private shipImage = document.querySelector(
     `[src="${this.url}"]`
   )! as HTMLImageElement;
+  private _trailClearSrc?: string;
+
+  set trailClearSrc(src: string) {
+    this._trailClearSrc = src;
+  }
 
   move(ctx: CanvasRenderingContext2D, loc: Partial<ObjectLocation>) {
+    if (!this._trailClearSrc) return;
+
     const image: HTMLImageElement = document.querySelector(
-      "#src"
+      `[src="${this._trailClearSrc}"]`
     )! as HTMLImageElement;
 
     const canvas = document.querySelector("#canvas")! as HTMLCanvasElement;

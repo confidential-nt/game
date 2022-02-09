@@ -6,7 +6,6 @@ type KeyFrame = () => void;
 
 export class AnimationFrame {
   private _handler?: AnimationFrameHandler;
-  // private keyFrames -> 연결리스트? 제네레이터? 프로미즈? 아님 기타 다른 방법? 흠..이걸 따로 KeyFrames 객체로?
 
   constructor() {}
 
