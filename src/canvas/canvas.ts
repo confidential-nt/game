@@ -1,3 +1,4 @@
+import { Background } from "./object/background.js";
 import { CanvasObject, FigureObject, ImageObject } from "./object/obj-type.js";
 
 export class Canvas {
@@ -5,7 +6,7 @@ export class Canvas {
   readonly element: HTMLCanvasElement = document.createElement("canvas");
   private backgroundImageUrl: string = "";
 
-  constructor(private root: HTMLElement) {
+  constructor(private root: HTMLElement, backgrondUrl?: string) {
     this.root.insertAdjacentElement("beforeend", this.element);
     this.element.id = "canvas";
     const rect = this.element.getBoundingClientRect();
@@ -15,18 +16,32 @@ export class Canvas {
 
     this.ctx = this.element.getContext("2d");
 
-    this.setBackgroundImage("../images/universe.jpg");
+    if (backgrondUrl) {
+      this.setBackgroundImage(
+        new Background(
+          { x: 0, y: 0 },
+          { width: this.element.width, height: this.element.height },
+          backgrondUrl
+        )
+      );
+    }
   }
 
-  setBackgroundImage(imageUrl: string) {
-    this.backgroundImageUrl = imageUrl;
+  setBackgroundImage(background: Background) {
+    this.backgroundImageUrl = background.url;
     const img = new Image();
     img.onload = () => {
-      this.ctx?.drawImage(img, 0, 0);
+      this.ctx?.drawImage(
+        img,
+        background.location.x,
+        background.location.y,
+        background.figure.width,
+        background.figure.height
+      );
     };
     img.hidden = true;
     img.id = "src";
-    img.src = imageUrl;
+    img.src = background.url;
     document.body.append(img);
   }
 

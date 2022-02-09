@@ -2,6 +2,7 @@ import { Canvas } from "./canvas/canvas.js";
 import {
   AnimationFrame,
   AnimationFrameHandler,
+  KeyFrames,
 } from "./canvas/frame/animation-frame.js";
 import { Bullet } from "./canvas/object/bullet.js";
 import {
@@ -16,7 +17,8 @@ class App {
   private _animationFrame?: AnimationFrame;
   private control?: Control;
   private readonly canvas: Canvas = new Canvas(
-    document.querySelector(".app")! as HTMLDivElement
+    document.querySelector(".app")! as HTMLDivElement,
+    "/images/universe.jpg"
   );
   readonly user: Player = new Player("user");
   readonly computer: Player = new Player("computer");
@@ -30,16 +32,18 @@ class App {
     const animationFrame = new AnimationFrame();
     this.control = new Control();
 
+    const w = 100;
+
     this.user.ship = new Ship(
-      { x: 300, y: 600 },
-      { width: 100, height: 100 },
-      "../images/spaceship2.png"
+      { x: this.canvas.element.width / 2 - w / 2, y: 600 },
+      { width: w, height: 100 },
+      "/images/spaceship2.png"
     );
 
     this.computer.ship = new Ship(
       { x: 15, y: 200 },
       { width: 20, height: 20 },
-      "../images/spaceship2.png"
+      "/images/spaceship2.png"
     );
 
     ready();
@@ -72,7 +76,26 @@ class App {
       }
     });
 
-    animationFrame.setHandler(async (time: DOMHighResTimeStamp) => {
+    const canvasHeight = this.canvas.element.height;
+    let x = 0;
+    let y = -canvasHeight + this.user.ship.figure.height;
+    const keyFrames = new KeyFrames();
+
+    keyFrames.addKeyFrame(() => {
+      const image = document.querySelector("#src")! as HTMLImageElement;
+
+      this.canvas.ctx?.drawImage(image, x, y);
+
+      y += 4;
+
+      if (y > 0) {
+        y = -canvasHeight + this.user.ship.figure.height;
+      }
+      this.user.ship.drawOn(this.canvas.ctx! as CanvasRenderingContext2D);
+    });
+
+    animationFrame.setHandler((time: DOMHighResTimeStamp) => {
+      keyFrames.play();
       window.requestAnimationFrame(
         animationFrame.handler! as AnimationFrameHandler
       );
