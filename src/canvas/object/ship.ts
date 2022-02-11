@@ -1,3 +1,4 @@
+import { Bullet, BulletQueue } from "./bullet.js";
 import { ImageObjectImpl, ObjectFigure, ObjectLocation } from "./canvas-obj.js";
 
 export class Ship extends ImageObjectImpl {
@@ -5,9 +6,25 @@ export class Ship extends ImageObjectImpl {
     `[src="${this.url}"]`
   )! as HTMLImageElement;
   private _trailClearSrc?: string;
+  readonly bulletQueue: BulletQueue = new BulletQueue();
+  private _bullet?: Bullet;
 
-  set trailClearSrc(src: string) {
+  set trailClearSrc(src: string | undefined) {
     this._trailClearSrc = src;
+  }
+
+  get trailClearSrc(): string | undefined {
+    if (this._trailClearSrc) return this._trailClearSrc;
+  }
+
+  set bullet(bullet: Bullet | undefined) {
+    if (bullet) {
+      this._bullet = bullet;
+    }
+  }
+
+  get bullet(): Bullet | undefined {
+    if (this._bullet) return this._bullet;
   }
 
   move(ctx: CanvasRenderingContext2D, loc: Partial<ObjectLocation>) {
@@ -44,5 +61,18 @@ export class Ship extends ImageObjectImpl {
     this.setLocation(loc);
 
     this.drawOn(ctx! as CanvasRenderingContext2D);
+  }
+
+  attack(ctx: CanvasRenderingContext2D, loc?: Partial<ObjectLocation>) {
+    if (!this._bullet) return;
+
+    if (loc) {
+      this._bullet.setLocation({
+        ...this._bullet.location,
+        ...loc,
+      });
+    }
+
+    this._bullet.drawOn(ctx);
   }
 }

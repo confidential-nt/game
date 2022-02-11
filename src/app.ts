@@ -47,15 +47,14 @@ class App {
     );
 
     this.computer.ship = new Ship(
-      { x: 15, y: 200 },
-      { width: 20, height: 20 },
+      { x: 0, y: 0 },
+      { width: 100, height: 100, rotate: 180 },
       "/images/spaceship2.png"
     );
 
     this.user.ship.trailClearSrc = "/images/universe.jpg";
 
     this.control.setKeyListener((e: KeyboardEvent) => {
-      // 컨트롤 안에 animationframe, player 둘다 넣어버리는 거지.
       const keyCode = e.code;
 
       switch (keyCode) {
@@ -79,6 +78,21 @@ class App {
             x: this.user.ship.location.x + 25,
           });
           break;
+        case "Space":
+          this.user.ship.bulletQueue.add(
+            new Bullet(
+              {
+                x:
+                  this.user.ship.location.x +
+                  this.user.ship.figure.width / 2 -
+                  5,
+                y: this.user.ship.location.y - 10,
+              },
+              { width: 10, height: 10 },
+              "tomato"
+            )
+          );
+          break;
       }
     });
 
@@ -88,7 +102,7 @@ class App {
     const keyFrames = new KeyFrames();
 
     keyFrames.addKeyFrame(() => {
-      if (!this.user.ship.isLoaded) return;
+      if (!this.user.ship.isLoaded || !this.computer.ship.isLoaded) return;
       if (!this.canvas.background?.isLoaded) return;
 
       const image = document.querySelector(
@@ -103,6 +117,35 @@ class App {
         y = -canvasHeight + this.user.ship.figure.height + 20;
       }
       this.user.ship.drawOn(this.canvas.ctx! as CanvasRenderingContext2D);
+      this.computer.ship.drawOn(this.canvas.ctx! as CanvasRenderingContext2D);
+    });
+
+    const queue: Bullet[] = [];
+
+    keyFrames.addKeyFrame(() => {
+      while (!this.user.ship.bulletQueue.isEmpty()) {
+        const bullet = this.user.ship.bulletQueue.delete();
+        if (bullet) {
+          queue.push(bullet);
+        }
+      }
+
+      for (let bullet of queue) {
+        bullet.setLocation({ y: bullet.location.y - 4 });
+        bullet.drawOn(this.canvas.ctx! as CanvasRenderingContext2D);
+
+        if (bullet.location.y < 0) {
+          const index = queue.findIndex((el) => el === bullet);
+          queue.splice(index, 1);
+
+          bullet.removeFrom(
+            this.canvas.ctx! as CanvasRenderingContext2D,
+            document.querySelector(
+              `[src="${this.user.ship.trailClearSrc}"]`
+            )! as HTMLImageElement
+          );
+        }
+      }
     });
 
     animationFrame.setHandler((time: DOMHighResTimeStamp) => {
@@ -130,5 +173,6 @@ class App {
 
 new App();
 
+// app 구조 수정
 // 공격 만들기
-// 이미지 구조 수정
+// stack을 queue로 바꾸는 건? 그렇게 해서 y가 음수가 되면 큐에서 삭제시켜버리고.. stack배열을 readonly로 직접적으로 노출시키지 않는 방법? 아니면 array[3]로 수정 못하게 하는 방법?

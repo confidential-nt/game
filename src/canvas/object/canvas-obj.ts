@@ -8,6 +8,7 @@ export type ObjectLocation = {
 export type ObjectFigure = {
   width: number;
   height: number;
+  rotate?: number;
 };
 
 export type ObjectColor = string | CanvasGradient | CanvasPattern;
@@ -53,6 +54,11 @@ export class FigureObjectImpl
   }
 
   drawOn(ctx: CanvasRenderingContext2D): void {
+    if (this._figure.rotate) {
+      ctx.save();
+      ctx.rotate(this._figure.rotate * (Math.PI / 180));
+    }
+
     ctx.fillStyle = this._color;
     ctx.fillRect(
       this._location.x,
@@ -60,9 +66,25 @@ export class FigureObjectImpl
       this._figure.width,
       this._figure.height
     );
+
+    if (this._figure.rotate) {
+      ctx.restore();
+    }
   }
 
-  removeFrom(ctx: CanvasRenderingContext2D): void {}
+  removeFrom(ctx: CanvasRenderingContext2D, image: HTMLImageElement): void {
+    ctx.drawImage(
+      image,
+      this._location.x,
+      this._location.y,
+      this._figure.width,
+      this._figure.height,
+      this._location.x,
+      this._location.y,
+      this._figure.width,
+      this._figure.height
+    );
+  }
 }
 
 export class ImageObjectImpl
@@ -101,6 +123,15 @@ export class ImageObjectImpl
       `[src="${this._url}"]`
     )! as HTMLImageElement;
 
+    const canvas = document.querySelector("#canvas")! as HTMLCanvasElement;
+
+    if (this._figure.rotate) {
+      ctx.save();
+
+      ctx.translate(canvas.width / 2 + this._figure.width / 2, 120);
+      ctx.rotate(this._figure.rotate * (Math.PI / 180));
+    }
+
     ctx.drawImage(
       img,
       this._location.x,
@@ -108,6 +139,10 @@ export class ImageObjectImpl
       this._figure.width,
       this._figure.height
     );
+
+    if (this._figure.rotate) {
+      ctx.restore();
+    }
   }
 
   removeFrom(ctx: CanvasRenderingContext2D, image: HTMLImageElement): void {
