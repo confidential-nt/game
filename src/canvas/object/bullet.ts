@@ -26,4 +26,13 @@ export class BulletQueue {
       return false;
     }
   }
+
+  values(): (Bullet | undefined)[] {
+    const temp = [];
+    while (!this.isEmpty()) {
+      temp.push(this.delete());
+    }
+
+    return temp;
+  }
 }

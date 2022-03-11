@@ -109,7 +109,13 @@ class App {
         `[src="${this.canvas.backgroundImageUrl}"]`
       )! as HTMLImageElement;
 
-      this.canvas.ctx?.drawImage(image, x, y);
+      this.canvas.ctx?.drawImage(
+        image,
+        x,
+        y,
+        this.canvas.element.width,
+        this.canvas.element.height + 700
+      );
 
       y += 4;
 
@@ -148,6 +154,11 @@ class App {
       }
     });
 
+    this.control.addController(() => {
+      // 공격 감지
+      // ...
+    });
+
     animationFrame.setHandler((time: DOMHighResTimeStamp) => {
       keyFrames.play();
       window.requestAnimationFrame(
@@ -176,3 +187,4 @@ new App();
 // app 구조 수정
 // 공격 만들기
 // stack을 queue로 바꾸는 건? 그렇게 해서 y가 음수가 되면 큐에서 삭제시켜버리고.. stack배열을 readonly로 직접적으로 노출시키지 않는 방법? 아니면 array[3]로 수정 못하게 하는 방법?
+// => 해결하긴 했으나..너무 비효율적임. 큐를 굳이 쓰는 이유가..뭐지? -> 그냥 배열 쓰는 게  나을지도..?..
